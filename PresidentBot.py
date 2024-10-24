@@ -2,8 +2,8 @@ import telebot
 from telebot import types
 
 # Замените на ваш токен и ID администратора
-TOKEN = '8075240704:AAGxHg_ZRz863pU0oao5VEc2zyxFdIZpE0c'
-ADMIN_CHAT_ID = '5176418706'
+TOKEN = 'YOUR_BOT_TOKEN'
+ADMIN_CHAT_ID = 'CHAT_ID'
 
 bot = telebot.TeleBot(TOKEN)
 
