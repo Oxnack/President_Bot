@@ -1,18 +1,32 @@
 import telebot
+import csv
 from telebot import types
 
+
+
 # Замените на ваш токен и ID администратора
-TOKEN = 'YOUR_BOT_TOKEN'
-ADMIN_CHAT_ID = 'CHAT_ID'
+TOKEN = '8075240704:AAGxHg_ZRz863pU0oao5VEc2zyxFdIZpE0c'
+ADMIN_CHAT_ID = '5176418706'
 
 bot = telebot.TeleBot(TOKEN)
 
 # Хранение заявок
 user_requests = {}
 
+data = [
+    ["user_id", "username"]
+]
+
+
+
 @bot.message_handler(commands=['start'])
 def start(message):
+    user_id = message.from_user.id    
+    username = message.from_user.usernam
+    save_user(user_id, username) 
+
     bot.send_message(message.chat.id, "Добро пожаловать! Отправьте свою заявку.")
+
 
 @bot.message_handler(func=lambda message: True)
 def handle_request(message):
@@ -20,6 +34,9 @@ def handle_request(message):
     username = message.from_user.username
     user_requests[user_id] = message.text 
     print(message.text)
+
+    save_user(user_id, username)
+
     # Создаем кнопки для администратора
     markup = types.InlineKeyboardMarkup()
     accept_button = types.InlineKeyboardButton("Принять", callback_data=f'accept_' + str(user_id) + "_" + username)
@@ -34,6 +51,7 @@ def handle_request(message):
 def handle_callback(call):
     user_id = int(call.data.split('_')[1])
     username = str(call.data.split("_")[2])
+
     print(call.data)
     
     if call.data.startswith('accept'):
@@ -48,9 +66,40 @@ def send_response(message, user_id):
     response_text = message.text
     bot.send_message(user_id, f"Ответ от администратора: {response_text}")
 
+
+def save_user(user_id, username):
+    ok = True
+    for elm in data:
+        if elm[1] == username:
+            ok = False
+
+    if ok == True:
+        data.append([user_id,username])
+
+
+        with open('data.csv', mode='w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)                               
+            writer.writerows(data)
+        print("данные записаны")
+
+def data_reader():
+    # Чтение данных из CSV-файла                           
+    with open('data.csv', mode='r', encoding='utf-8') as file:
+        reader = csv.reader(file)                            
+        data = []                                         
+        for row in reader:                                
+            data.append(row)
+
+
+
+data_reader()
+print("данные прочитаны") 
+
 if __name__ == '__main__':
     bot.polling(none_stop=True)
 
+
+#####
 
 
 
